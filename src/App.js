@@ -1,24 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
 
 function App() {
+  // const [text, setText] = useState("no name");
+  const [username, setUsername] = useState(null);
+  const [users, setUsers] = useState([]);
+  const handleSearch = () => {
+    if (username) {
+      fetch(`https://api.github.com/search/users?q=${username}`)
+        .then(res => res.json())
+        .then(json => setUsers(json.items))
+        .catch(e => alert(e));
+    }
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input
+        onChange={event => setUsername(event.target.value)}
+        placeholder="github username"
+      />
+      <button onClick={handleSearch}>Search</button>
+      <br />
+      {username}
+      <br />
+      {users.map(user => (
+        <div key={user.id}>
+          {user.login}:
+          <a href={user.html_url}>
+            <img
+              src={user.avatar_url}
+              alt={user.login}
+              width={50}
+              height={50}
+            />
+          </a>
+        </div>
+      ))}
     </div>
   );
 }
